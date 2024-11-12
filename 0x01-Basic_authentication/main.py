@@ -1,10 +1,10 @@
-import base64
+#!/usr/bin/env python3
+""" Main 0
+"""
+from api.v1.auth.auth import Auth
 
-if __name__ == '__main__':
+a = Auth()
 
-    # Original data
-    data = "SGVsbG8sIFdvcmxkIQ=="
-
-    decoded_data = base64.b64decode(data).decode()
-
-    print(decoded_data)
+print(a.require_auth("/api/v1/status/", ["/api/v1/status/"]))
+print(a.authorization_header())
+print(a.current_user())
