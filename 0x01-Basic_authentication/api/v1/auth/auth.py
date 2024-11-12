@@ -12,7 +12,7 @@ from werkzeug.routing import NoMatch
 
 class Auth:
 
-    def require_auth(path: str, excluded_paths: List[str]) -> bool:
+    def require_auth(self, path: str, excluded_paths: List[str]) -> bool:
         """
         Returns the authorization header from a request object
         :param path:
@@ -37,7 +37,7 @@ class Auth:
         return True
 
     @staticmethod
-    def authorization_header() -> str:
+    def authorization_header(self, request=None) -> str:
         """
         Returns the authorization header from a request object
         :return:
