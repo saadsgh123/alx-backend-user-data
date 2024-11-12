@@ -18,8 +18,8 @@ class Auth:
         """
             Determines whether a given path requires authentication or not
             Args:
-                - path(str): Url path to be checked
-                - excluded_paths(List of str): List of paths that do not require
+            - path(str): Url path to be checked
+            - excluded_paths(List of str): List of paths that do not require
                     authentication
             Return:
                  True if path is not in excluded_paths, else False
