@@ -15,7 +15,7 @@ def status() -> str:
 
 
 @app_views.route('/unauthorized', methods=['GET'], strict_slashes=False)
-def status() -> str:
+def unauthorized() -> str:
     """ GET /api/v1/unauthorized
     Return:
       - unauthorized
