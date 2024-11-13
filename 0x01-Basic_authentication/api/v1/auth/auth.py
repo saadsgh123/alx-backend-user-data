@@ -10,6 +10,9 @@ from flask import request
 
 
 class Auth:
+    """
+    Auth class signature
+    """
 
     def require_auth(self, path: str, excluded_paths: List[str]) -> bool:
         """
