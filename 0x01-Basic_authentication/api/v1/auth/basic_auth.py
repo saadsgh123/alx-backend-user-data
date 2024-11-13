@@ -8,6 +8,7 @@ from typing import (
     List,
     TypeVar
 )
+from models.user import User
 
 
 class BasicAuth(Auth):
