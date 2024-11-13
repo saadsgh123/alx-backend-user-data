@@ -40,15 +40,11 @@ class Auth:
 
     def authorization_header(self, request=None) -> str:
         """
-        Returns the authorization header from a request object
-        :return:
+        function that check request header and return its value
+        :param request: take a request as a parameter
+        :return: header value
         """
-        return None
-
-    def current_user(self, request=None) -> TypeVar('User'):
-        """
-        Returns a User instance from information from a request object
-        :param request:
-        :return:
-        """
-        return None
+        if request is None or request.header.get("Authorization") is None:
+            return None
+        else:
+            return request.header.get("Authorization")
