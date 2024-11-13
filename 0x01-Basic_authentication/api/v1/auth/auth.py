@@ -44,7 +44,7 @@ class Auth:
         :param request: take a request as a parameter
         :return: header value
         """
-        if request is None or request.header.get("Authorization") is None:
+        if request is None or request.headers.get("Authorization") is None:
             return None
         else:
-            return request.header.get("Authorization")
+            return request.headers.get("Authorization")
