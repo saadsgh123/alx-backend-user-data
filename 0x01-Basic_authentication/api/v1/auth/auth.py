@@ -7,7 +7,6 @@ from typing import (
     TypeVar
 )
 from flask import request
-from werkzeug.routing import NoMatch
 
 
 class Auth:
@@ -36,7 +35,7 @@ class Auth:
                         return False
         return True
 
-    @staticmethod
+
     def authorization_header(self, request=None) -> str:
         """
         Returns the authorization header from a request object
