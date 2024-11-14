@@ -1,71 +1,75 @@
 #!/usr/bin/env python3
 """
-Definition of class Auth
+Route module for the API
 """
+from os import getenv
+from api.v1.views import app_views
+from flask import Flask, jsonify, abort, request
+from flask_cors import (CORS, cross_origin)
 import os
-from typing import (
-    List,
-    TypeVar
-)
-from flask import request
 
 
-class Auth:
+app = Flask(__name__)
+app.register_blueprint(app_views)
+CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
+auth = None
+AUTH_TYPE = os.getenv("AUTH_TYPE")
+if AUTH_TYPE == "auth":
+    from api.v1.auth.auth import Auth
+    auth = Auth()
+elif AUTH_TYPE == "basic_auth":
+    from api.v1.auth.basic_auth import BasicAuth
+    auth = BasicAuth()
+elif AUTH_TYPE == "session_auth":
+    from api.v1.auth.session_auth import SessionAuth
+    auth = SessionAuth()
+
+
+@app.before_request
+def bef_req():
     """
-    Auth class signature
+    Filter each request before it's handled by the proper route
     """
+    if auth is None:
+        pass
+    else:
+        setattr(request, "current_user", auth.current_user(request))
+        excluded = [
+            '/api/v1/status/',
+            '/api/v1/unauthorized/',
+            '/api/v1/forbidden/',
+            '/api/v1/auth_session/login/'
+        ]
+        if auth.require_auth(request.path, excluded):
+            cookie = auth.session_cookie(request)
+            if auth.authorization_header(request) is None and cookie is None:
+                abort(401, description="Unauthorized")
+            if auth.current_user(request) is None:
+                abort(403, description="Forbidden")
 
-    @staticmethod
-    def require_auth(path: str, excluded_paths: List[str]) -> bool:
-        """
-        Returns the authorization header from a request object
-        :param path:
-        :param excluded_paths:
-        :return:
-        """
-        if path is None:
-            return True
-        elif excluded_paths is None or excluded_paths == []:
-            return True
-        elif path in excluded_paths:
-            return False
-        else:
-            for i in excluded_paths:
-                if i.startswith(path):
-                    return False
-                if path.startswith(i):
-                    return False
-                if i[-1] == "*":
-                    if path.startswith(i[:-1]):
-                        return False
-        return True
 
-    def authorization_header(self, request=None) -> str:
-        """
-        function that check request header and return its value
-        :param request: take a request as a parameter
-        :return: header value
-        """
-        if request is None or request.headers.get("Authorization") is None:
-            return None
-        else:
-            return request.headers.get("Authorization")
+@app.errorhandler(404)
+def not_found(error) -> str:
+    """ Not found handler
+    """
+    return jsonify({"error": "Not found"}), 404
 
-    def current_user(self, request=None) -> TypeVar('User'):
-        """
-        Returns a User instance from information from a request object
-        """
-        return None
 
-    def session_cookie(self, request=None):
-        """
-        Returns a cookie from a request
-        Args:
-            request : request object
-        Return:
-            value of _my_session_id cookie from request object
-        """
-        if request is None:
-            return None
-        session_name = os.getenv('SESSION_NAME')
-        return request.cookies.get(session_name)
+@app.errorhandler(401)
+def unauthorized(error) -> str:
+    """ Request unauthorized handler
+    """
+    return jsonify({"error": "Unauthorized"}), 401
+
+
+@app.errorhandler(403)
+def forbidden(error) -> str:
+    """ Request unauthorized handler
+    """
+    return jsonify({"error": "Forbidden"}), 403
+
+
+if __name__ == "__main__":
+    host = getenv("API_HOST", "0.0.0.0")
+    port = getenv("API_PORT", "5000")
+    app.run(host=host, port=port)
