@@ -1,19 +1,16 @@
 #!/usr/bin/env python3
 """
-Definition of class Auth
+Definition of class BasicAuth
 """
 import base64
-from api.v1.auth.auth import Auth
-from typing import (
-    List,
-    TypeVar
-)
+from .auth import Auth
+from typing import TypeVar
+
 from models.user import User
 
 
 class BasicAuth(Auth):
-    """
-    BasicAuth class signature
+    """ Implement Basic Authorization protocol methods
     """
     def extract_base64_authorization_header(self,
                                             authorization_header: str) -> str:

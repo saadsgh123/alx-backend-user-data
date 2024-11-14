@@ -1,76 +1,72 @@
 #!/usr/bin/env python3
 """
-Route module for the API
+Definition of class Auth
 """
-from os import getenv
-from api.v1.views import app_views
-from flask import Flask, jsonify, abort, request
-from flask_cors import (CORS, cross_origin)
 import os
+from flask import request
+from typing import (
+    List,
+    TypeVar
+)
 
 
-app = Flask(__name__)
-app.register_blueprint(app_views)
-CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
-auth = None
-AUTH_TYPE = os.getenv("AUTH_TYPE")
-if AUTH_TYPE == "auth":
-    from api.v1.auth.auth import Auth
-    auth = Auth()
-elif AUTH_TYPE == "basic_auth":
-    from api.v1.auth.basic_auth import BasicAuth
-    auth = BasicAuth()
-elif AUTH_TYPE == "session_auth":
-    from api.v1.auth.session_auth import SessionAuth
-    auth = SessionAuth()
-
-
-@app.before_request
-def bef_req():
+class Auth:
     """
-    Filter each request before it's handled by the proper route
+    Manages the API authentication
     """
-    if auth is None:
-        pass
-    else:
-        setattr(request, "current_user", auth.current_user(request))
-        excluded = [
-            '/api/v1/status/',
-            '/api/v1/unauthorized/',
-            '/api/v1/forbidden/',
-            '/api/v1/auth_session/login/'
-        ]
-        if auth.require_auth(request.path, excluded):
-            cookie = auth.session_cookie(request)
-            if auth.authorization_header(request) is None and cookie is None:
-                abort(401, description="Unauthorized")
-            if auth.current_user(request) is None:
-                abort(403, description="Forbidden")
+    def require_auth(self, path: str, excluded_paths: List[str]) -> bool:
+        """
+        Determines whether a given path requires authentication or not
+        Args:
+            - path(str): Url path to be checked
+            - excluded_paths(List of str): List of paths that do not require
+              authentication
+        Return:
+            - True if path is not in excluded_paths, else False
+        """
+        if path is None:
+            return True
+        elif excluded_paths is None or excluded_paths == []:
+            return True
+        elif path in excluded_paths:
+            return False
+        else:
+            for i in excluded_paths:
+                if i.startswith(path):
+                    return False
+                if path.startswith(i):
+                    return False
+                if i[-1] == "*":
+                    if path.startswith(i[:-1]):
+                        return False
+        return True
 
+    def authorization_header(self, request=None) -> str:
+        """
+        Returns the authorization header from a request object
+        """
+        if request is None:
+            return None
+        header = request.headers.get('Authorization')
+        if header is None:
+            return None
+        return header
 
-@app.errorhandler(404)
-def not_found(error) -> str:
-    """
-    Not found handler
-    """
-    return jsonify({"error": "Not found"}), 404
+    def current_user(self, request=None) -> TypeVar('User'):
+        """
+        Returns a User instance from information from a request object
+        """
+        return None
 
-
-@app.errorhandler(401)
-def unauthorized(error) -> str:
-    """ Request unauthorized handler
-    """
-    return jsonify({"error": "Unauthorized"}), 401
-
-
-@app.errorhandler(403)
-def forbidden(error) -> str:
-    """ Request unauthorized handler
-    """
-    return jsonify({"error": "Forbidden"}), 403
-
-
-if __name__ == "__main__":
-    host = getenv("API_HOST", "0.0.0.0")
-    port = getenv("API_PORT", "5000")
-    app.run(host=host, port=port)
+    def session_cookie(self, request=None):
+        """
+        Returns a cookie from a request
+        Args:
+            request : request object
+        Return:
+            value of _my_session_id cookie from request object
+        """
+        if request is None:
+            return None
+        session_name = os.getenv('SESSION_NAME')
+        return request.cookies.get(session_name)
