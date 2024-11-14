@@ -25,7 +25,6 @@ elif AUTH_TYPE == "session_auth":
     auth = SessionAuth()
 
 
-
 @app.before_request
 def bef_req():
     """
@@ -47,7 +46,6 @@ def bef_req():
                 abort(401, description="Unauthorized")
             if auth.current_user(request) is None:
                 abort(403, description="Forbidden")
-
 
 
 @app.errorhandler(404)
