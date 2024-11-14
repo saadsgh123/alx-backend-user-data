@@ -50,7 +50,8 @@ def bef_req():
 
 @app.errorhandler(404)
 def not_found(error) -> str:
-    """ Not found handler
+    """
+    Not found handler
     """
     return jsonify({"error": "Not found"}), 404
 
