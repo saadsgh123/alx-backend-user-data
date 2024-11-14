@@ -30,6 +30,7 @@ def bef_req():
     if auth is None:
         pass
     else:
+        setattr(request, "current_user", auth.current_user(request))
         excluded = [
             '/api/v1/status/',
             '/api/v1/unauthorized/',
@@ -39,7 +40,7 @@ def bef_req():
             if auth.authorization_header(request) is None:
                 abort(401, description="Unauthorized")
             if auth.current_user(request) is None:
-                request.current_user = auth.current_user(request)
+                abort(403, description="Forbidden")
 
 
 @app.errorhandler(404)
