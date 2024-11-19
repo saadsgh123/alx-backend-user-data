@@ -65,3 +65,20 @@ class DB:
                 raise NoResultFound()
             else:
                 return user
+
+    def update_user(self, user, hashed_password):
+        """
+        Update a user's attributes
+        Args:
+        user_id (int): user's id
+        kwargs (dict): dict of key, value pairs representing the
+            attributes to update and the values to update
+            them with
+        Return:
+            No return
+        """
+        user = self.find_user_by(id=user)
+        if user is None:
+            raise ValueError()
+        user.hashed_password = hashed_password
+        return None
