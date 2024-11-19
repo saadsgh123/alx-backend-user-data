@@ -81,4 +81,5 @@ class DB:
         if user is None:
             raise ValueError()
         user.hashed_password = hashed_password
+        self._session.commit()
         return None
