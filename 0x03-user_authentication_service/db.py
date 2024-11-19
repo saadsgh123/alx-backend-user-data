@@ -78,9 +78,9 @@ class DB:
             No return
         """
         user = self.find_user_by(id=user_id)
-        if user is None:
-            raise ValueError()
         for k, v in kwargs.items():
-            setattr(user, k, v)
-            self._session.commit()
+            if hasattr(user, k):
+                setattr(user, k, v)
+            else:
+                raise ValueError
         return None
