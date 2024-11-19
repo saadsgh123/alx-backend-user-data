@@ -66,7 +66,7 @@ class DB:
             else:
                 return user
 
-    def update_user(self, user, hashed_password):
+    def update_user(self, user_id: int, **kwargs) -> None:
         """
         Update a user's attributes
         Args:
@@ -77,9 +77,10 @@ class DB:
         Return:
             No return
         """
-        user = self.find_user_by(id=user)
+        user = self.find_user_by(id=user_id)
         if user is None:
             raise ValueError()
-        user.hashed_password = hashed_password
-        self._session.commit()
+        for k, v in kwargs.items():
+            setattr(user, k, v)
+            self._session.commit()
         return None
