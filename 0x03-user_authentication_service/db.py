@@ -5,7 +5,6 @@ DB module
 from sqlalchemy import create_engine
 from sqlalchemy.exc import InvalidRequestError
 from sqlalchemy.orm.exc import NoResultFound
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
 
@@ -48,10 +47,21 @@ class DB:
         self._session.commit()
         return user
 
-    def find_user_by(self, email):
-        if email is None:
-            raise InvalidRequestError()
-        user = self._session.query(User).filter_by(email=email)
-        if user is None:
-            raise NoResultFound()
-        return user
+    def find_user_by(self, **kwargs) -> User:
+        """
+        Return a user who has an attribute matching the attributes passed
+        as arguments
+        Args:
+            attributes (dict): a dictionary of attributes to match the user
+        Return:
+            matching user or raise error
+        """
+        properties = User.__mapper__.attrs.keys()
+        for k in kwargs.keys():
+            if k not in properties:
+                raise InvalidRequestError()
+            user = self._session.query(User).filter_by(**kwargs).one()
+            if user is None:
+                raise NoResultFound()
+            else:
+                return user
