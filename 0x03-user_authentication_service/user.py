@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String
 
@@ -11,15 +12,3 @@ class User(Base):
     hashed_password = Column(String(250))
     session_id = Column(String(250))
     reset_token = Column(String(250))
-
-    def __repr__(self):
-        return "<User(name='%s', fullname='%s', nickname='%s')>" % (
-            self.name, self.fullname, self.nickname)
-
-
-if __name__ == '__main__':
-
-    print(User.__tablename__)
-
-    for column in User.__table__.columns:
-        print("{}: {}".format(column, column.type))
