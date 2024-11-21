@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+"""
+main app
+"""
 from flask import Flask, request, jsonify
 from auth import Auth
 
@@ -20,13 +23,13 @@ def welcome():
 def register():
     """
     create a new user
-    :return:
+    :return: message
     """
     email = request.form.get("email")
     password = request.form.get("password")
     try:
         AUTH.register_user(email, password)
-        return {"email":email, "message":"user created"}
+        return {"email": email, "message": "user created"}
     except ValueError:
         return {"message": "email already registered"}
 
