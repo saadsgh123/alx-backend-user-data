@@ -67,3 +67,14 @@ class Auth:
             return session_id
         else:
             return None
+
+    def get_user_from_session_id(self, session_id: str) -> User:
+        """
+        search for user by session id
+        :param session_id:
+        :return: User
+        """
+        user = self._db.find_user_by(session_id=session_id)
+        if user is not None:
+            return user
+        return None
