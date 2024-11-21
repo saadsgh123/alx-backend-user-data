@@ -16,6 +16,7 @@ def welcome():
     :return: response json object
     """
     response = {"message": "Bienvenue"}
+
     return jsonify(response)
 
 
@@ -29,9 +30,9 @@ def register():
     password = request.form.get("password")
     try:
         AUTH.register_user(email, password)
-        return {"email": email, "message": "user created"}
+        return jsonify({"email": email, "message": "user created"})
     except ValueError:
-        return {"message": "email already registered"}
+        return jsonify({"message": "email already registered"}, 400)
 
 
 if __name__ == '__main__':
