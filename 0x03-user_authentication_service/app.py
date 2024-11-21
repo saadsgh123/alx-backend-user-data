@@ -2,8 +2,7 @@
 """
 main app
 """
-import flask
-from flask import Flask, request, jsonify, make_response
+from flask import Flask, request, jsonify, make_response, abort
 from auth import Auth
 
 app = Flask(__name__)
@@ -40,20 +39,19 @@ def register():
 def login():
     """
     login and create a session id
-    :return:
+    :return: respomse
     """
     email = request.form.get("email")
     password = request.form.get("password")
     if not email or not password:
-        return flask.abort(401)
+        return abort(401)
     is_valid = AUTH.valid_login(email, password)
     if is_valid:
         session_id = AUTH.create_session(email)
         response = make_response(jsonify({"email": email, "message": "logged in"}))
         response.set_cookie("session_id", session_id)
         return response
-    return flask.abort(401)
-
+    return abort(401)
 
 
 if __name__ == '__main__':
