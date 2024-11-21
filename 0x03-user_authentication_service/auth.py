@@ -74,7 +74,9 @@ class Auth:
         :param session_id:
         :return: User
         """
+        if not session_id:
+            return None
         user = self._db.find_user_by(session_id=session_id)
-        if user is not None:
+        if user is session_id:
             return user
         return None
