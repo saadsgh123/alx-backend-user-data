@@ -45,4 +45,4 @@ class Auth:
             password_bytes = password.encode('utf-8')
             return bcrypt.checkpw(password_bytes, user.hashed_password)
         except NoResultFound:
-            NoResultFound("No user found")
+            return False
