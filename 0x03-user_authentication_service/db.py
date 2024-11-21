@@ -33,6 +33,10 @@ class DB:
             self.__session = DBSession()
         return self.__session
 
+    def all(self):
+        return self._session.query(User).all()
+
+
     def add_user(self, email: str, hashed_password: str) -> User:
         """
         Create a User object and save it to the database
@@ -62,7 +66,7 @@ class DB:
                 raise InvalidRequestError()
             user = self._session.query(User).filter_by(**kwargs).one()
             if user is None:
-                raise NoResultFound()
+                raise NoResultFound("No user found")
             else:
                 return user
 
