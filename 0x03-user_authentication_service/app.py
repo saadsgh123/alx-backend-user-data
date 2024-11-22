@@ -58,17 +58,23 @@ def login():
 @app.route("/sessions", methods=["DELETE"])
 def logout():
     """
-    logout function
-    :return: response with 403 http if no user found
+    Logout function
+    :return: Redirect to home or 403 HTTP status if no session is found
     """
     session_id = request.cookies.get("session_id")
-    if session_id is not None:
-        user = AUTH.get_user_from_session_id(session_id=session_id)
-        AUTH.destroy_session(user.id)
-        return redirect("/")
-    else:
-        response = make_response("", 403)
-        return response
+
+    if not session_id:
+        return make_response("", 403)
+
+    user = AUTH.get_user_from_session_id(session_id=session_id)
+
+    if user is None:
+        return make_response("", 403)
+
+    AUTH.destroy_session(user.id)
+    response = redirect("/")
+    response.set_cookie("session_id", "", max_age=0)
+    return response
 
 
 if __name__ == '__main__':
