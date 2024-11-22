@@ -3,15 +3,22 @@
 Main file
 """
 from auth import Auth
+from db import DB
 
 email = 'bob@bob.com'
 password = 'MyPwdOfBob'
 auth = Auth()
+db = DB()
 
 auth.register_user(email, password)
 
-print(auth.valid_login(email, password))
+session_id = auth.create_session(email)
 
-print(auth.valid_login(email, "WrongPwd"))
+print(f"Session id:{session_id}")
 
-print(auth.valid_login("unknown@email", password))
+search_user = db.find_user_by(email=email)
+print(search_user.session_id)
+
+user = auth.get_user_from_session_id(session_id)
+if user is not None:
+    print(user.email)
