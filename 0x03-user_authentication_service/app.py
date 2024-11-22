@@ -58,21 +58,20 @@ def login():
 @app.route("/sessions", methods=["DELETE"])
 def logout():
     """
-    Handles user logout by destroying
-    :return: Redirect to home on success
+    Logout function
+    :return: Redirect home or 403 HTTP
     """
     session_id = request.cookies.get("session_id")
 
     if not session_id:
-        return abort(403)
+        return make_response("", 403)
 
-    user = AUTH.get_user_from_session_id(session_id)
+    user = AUTH.get_user_from_session_id(session_id=session_id)
 
-    if not user:
-        return abort(403)
+    if user is None:
+        return make_response("", 403)
 
     AUTH.destroy_session(user.id)
-
     response = redirect("/")
     response.set_cookie("session_id", "", max_age=0)
     return response
