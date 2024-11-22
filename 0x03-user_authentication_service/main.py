@@ -19,6 +19,5 @@ print(f"Session id:{session_id}")
 search_user = db.find_user_by(email=email)
 print(search_user.session_id)
 
-user = auth.get_user_from_session_id(session_id)
-if user is not None:
-    print(user.email)
+user = auth.get_user_from_session_id("session_id")
+print(user.email)
