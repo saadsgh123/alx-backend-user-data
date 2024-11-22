@@ -2,7 +2,7 @@
 """
 main app
 """
-from flask import Flask, request, jsonify, make_response, abort, render_template, redirect
+from flask import Flask, request, jsonify, make_response, abort, redirect
 from auth import Auth
 
 app = Flask(__name__)
