@@ -100,9 +100,13 @@ def get_reset_password_token():
     if not email:
         return make_response("", 403)
 
-    token = AUTH.get_reset_password_token(email)
+    try:
+        token = AUTH.get_reset_password_token(email)
+    except ValueError:
+        return make_response("", 403)
+
     response = make_response(
-        jsonify({"email": email, "reset_token": token}),
+        {"email": "<user email>", "reset_token": token},
         200
     )
     return response
