@@ -12,12 +12,6 @@ db = DB()
 
 auth.register_user(email, password)
 
-session_id = auth.create_session(email)
+token = auth.get_reset_password_token(email="email")
 
-print(f"Session id:{session_id}")
-
-search_user = db.find_user_by(email=email)
-print(search_user.session_id)
-
-user = auth.get_user_from_session_id("session_id")
-print(user.email)
+print(token)
