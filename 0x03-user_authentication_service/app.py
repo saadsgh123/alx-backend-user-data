@@ -2,7 +2,7 @@
 """
 main app
 """
-from flask import Flask, request, jsonify, make_response, abort
+from flask import Flask, request, jsonify, make_response, abort, render_template, redirect
 from auth import Auth
 
 app = Flask(__name__)
@@ -53,6 +53,19 @@ def login():
         response.set_cookie("session_id", session_id)
         return response
     return abort(401)
+
+
+@app.route("/sessions", methods=["DELETE"])
+def logout():
+    session_id = request.cookies.get("session_id")
+    if session_id is not None:
+        user = AUTH.get_user_from_session_id(session_id=session_id)
+        AUTH.destroy_session(user.id)
+    response = make_response()
+    response.set_cookie("session_id", None)
+    return redirect("/", 403, response)
+
+
 
 
 if __name__ == '__main__':
