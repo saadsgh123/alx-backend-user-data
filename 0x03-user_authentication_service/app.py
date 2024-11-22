@@ -57,6 +57,10 @@ def login():
 
 @app.route("/sessions", methods=["DELETE"])
 def logout():
+    """
+    logout function
+    :return: response with 403 http if no user found
+    """
     session_id = request.cookies.get("session_id")
     if session_id is not None:
         user = AUTH.get_user_from_session_id(session_id=session_id)
@@ -65,8 +69,6 @@ def logout():
     else:
         response = make_response("", 403)
         return response
-
-
 
 
 if __name__ == '__main__':
