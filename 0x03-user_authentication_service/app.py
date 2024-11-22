@@ -13,7 +13,7 @@ AUTH = Auth()
 def welcome():
     """
     welcome to route
-    :return: response json object
+    :return: response JSON object
     """
     response = {"message": "Bienvenue"}
 
@@ -74,6 +74,22 @@ def logout():
     AUTH.destroy_session(user.id)
     response = redirect("/")
     response.set_cookie("session_id", "", max_age=0)
+    return response
+
+
+@app.route("/profile", methods=["GET"])
+def profile():
+    session_id = request.cookies.get("session_id")
+
+    if not session_id:
+        return make_response("", 403)
+
+    user = AUTH.get_user_from_session_id(session_id=session_id)
+
+    if user is None:
+        return make_response("", 403)
+
+    response = make_response({"email": user.email}, 200)
     return response
 
 
