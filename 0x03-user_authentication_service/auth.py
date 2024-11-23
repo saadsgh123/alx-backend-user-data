@@ -93,20 +93,19 @@ class Auth:
 
     def get_reset_password_token(self, email: str) -> str:
         """
-        function that generates reset user pw
-        :param email: user email
-        :return: reset token
+        Generates a reset_token uuid for a user identified by the given email
+        Args:
+            email (str): user's email address
+        Return:
+            newly generated reset_token for the relevant user
         """
         try:
             user = self._db.find_user_by(email=email)
         except NoResultFound:
-            raise ValueError()
+            raise ValueError
 
-        if not user:
-            raise ValueError()
-
-        reset_token = str(uuid.uuid4())
-        self._db.update_user(user_id=user.id, reset_token=reset_token)
+        reset_token = _generate_uuid()
+        self._db.update_user(user.id, reset_token=reset_token)
         return reset_token
 
     def update_password(self, reset_token: str, password: str) -> None:
