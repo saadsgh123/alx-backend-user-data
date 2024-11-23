@@ -106,27 +106,31 @@ class Auth:
             raise ValueError()
 
         reset_token = str(uuid.uuid4())
-        self._db.update_user(user.id, reset_token=reset_token)
-
+        self._db.update_user(user_id=user.id, reset_token=reset_token)
         return reset_token
 
     def update_password(self, reset_token: str, password: str) -> None:
         """
-        function to reset user pass
-        :param reset_token:
-        :param password:
+        Updates a user's password if the reset token is valid.
+        :param reset_token: Token used to validate the reset request
+        :param password: The new password
         :return: None
         """
         try:
             user = self._db.find_user_by(reset_token=reset_token)
+            if not user:
+                raise ValueError("Invalid reset token")
         except NoResultFound:
-            raise ValueError()
-
-        if not user:
-            raise ValueError()
+            raise ValueError("Invalid reset token")
 
         hashed_password = _hash_password(password)
-        self._db.update_user(user.id,
-                             hashed_password=hashed_password,
-                             reset_token=None)
-        return None
+
+        try:
+            self._db.update_user(
+                user.id,
+                hashed_password=hashed_password,
+                reset_token=None
+            )
+            print(f"Password updated successfully for user ID: {user.id}")
+        except Exception as e:
+            raise ValueError("Failed to update password")
